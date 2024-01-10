@@ -11,7 +11,6 @@ class Solution:
             if root is None:
                 return []
           
- 
             # Recursively explore the left and right children, and accumulate leaf values
             leaves = dfs(root.left) + dfs(root.right)
           
