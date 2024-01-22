@@ -6,4 +6,3 @@ class Solution(object):
             newNoRob = max(norob, rob)
             rob, norob = newRob, newNoRob
         return max(rob, norob)
-        
