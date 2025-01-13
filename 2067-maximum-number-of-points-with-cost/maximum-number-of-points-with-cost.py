@@ -1,42 +1,32 @@
 class Solution:
-    def maxPoints(self, grid: List[List[int]]) -> int:
-        width = len(grid[0])
-        current = [0] * width
-        previous = [0] * width
-        
-        for level in grid:
-            peak = 0
-            # Forward sweep
-            for i in range(width):
-                peak = max(peak - 1, previous[i])
-                current[i] = peak
-            
-            peak = 0
-            # Backward sweep
-            for i in range(width - 1, -1, -1):
-                peak = max(peak - 1, previous[i])
-                current[i] = max(current[i], peak) + level[i]
-            
-            previous, current = current, previous
-        
-        return max(previous)
+    def maxPoints(self, points: List[List[int]]) -> int:
+        m, n = len(points), len(points[0])
+        dp = [0] * n
 
-def main():
-    input = sys.stdin.read().strip()
+        # Initialize dp with the first row
+        for j in range(n):
+            dp[j] = points[0][j]
 
-    test_cases = input.splitlines()
-    results = []
-    for case in test_cases:
-        grid = json.loads(case)
-        results.append(Solution().maxPoints(grid))
+        # Traverse through each row
+        for i in range(1, m):
+            leftMax = [0] * n
+            rightMax = [0] * n
+            newDp = [0] * n
 
-    with open('user.out', 'w') as f:
-        for result in results:
-            f.write(f"{result}\n")
+            # Calculate left max
+            leftMax[0] = dp[0]
+            for j in range(1, n):
+                leftMax[j] = max(leftMax[j - 1], dp[j] + j)
 
-if __name__ == "__main__":
-    main()
-    exit(0)
+            # Calculate right max
+            rightMax[n - 1] = dp[n - 1] - (n - 1)
+            for j in range(n - 2, -1, -1):
+                rightMax[j] = max(rightMax[j + 1], dp[j] - j)
 
+            # Calculate new DP for the current row
+            for j in range(n):
+                newDp[j] = max(leftMax[j] - j, rightMax[j] + j) + points[i][j]
 
-#https://leetcode.com/problems/maximum-number-of-points-with-cost/submissions/1357852918/
+            dp = newDp
+
+        return max(dp)
