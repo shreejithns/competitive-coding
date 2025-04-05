@@ -1,13 +1,11 @@
 class Solution:
-    def subsetXORSum(self, nums: List[int]) -> int:
+    def subsetXORSum(self, nums):
         n = len(nums)
-        total_sum = 0
-        # Iterate through all possible subsets
-        for i in range(1 << n):
+        total = 0
+        for mask in range(1 << n):
             subset_xor = 0
-            for j in range(n):
-                # Check if the j-th element is in the i-th subset
-                if i & (1 << j):
-                    subset_xor ^= nums[j]
-            total_sum += subset_xor
-        return total_sum
+            for i in range(n):
+                if mask & (1 << i):
+                    subset_xor ^= nums[i]
+            total += subset_xor
+        return total
