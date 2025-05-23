@@ -1,16 +1,12 @@
 class Solution:
-    def maximumValueSum(self, nums: list[int], k: int, edges: list[list[int]]) -> int:
-        n: int = len(nums)
-        deltas: list[int] = [(nums[i] ^ k) - nums[i] for i in range(n)]  # represents how will change number after XOR
-        deltas.sort(reverse=True)
-        res: int = sum(nums)
-
-        for start_ind in range(0, n - 1, 2):
-            changing_delta: int = deltas[start_ind] + deltas[start_ind + 1]  # showing whether if would be beneficial if we XOR this two nodes 
-            if changing_delta > 0:
-                res += changing_delta
-            else:
-                break
-
-        return res
-
+    def maximumValueSum(self, nums: List[int], k: int, edges: List[List[int]]) -> int:
+        n=len(nums)
+        @cache
+        def f(i, c):
+            if i==n:
+                if c==1: return -(1<<31)
+                return 0
+            x=nums[i]
+            return max(x+f(i+1, c),(x^k)+f(i+1,1-c))
+        return f(0, 0)
+        
