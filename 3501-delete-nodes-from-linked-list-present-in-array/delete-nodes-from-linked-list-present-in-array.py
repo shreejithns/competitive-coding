@@ -1,30 +1,23 @@
-# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, val=0, next=None):
-#         self.val = val
-#         self.next = next
 class Solution:
     def modifiedList(self, nums: List[int], head: Optional[ListNode]) -> Optional[ListNode]:
-        max_val = -1
-        for num in nums:
-            max_val = max(num, max_val)
+        to_remove = set(nums)
+        vals = []
+        curr = head
+        while curr:
+            if curr.val not in to_remove:
+                vals.append(curr.val)
+            curr = curr.next
 
-        freq = [False] * (max_val + 1)
+        if not vals:
+            return None
 
-        for num in nums:
-            freq[num] = True
+        curr = head
+        prev = None
+        for v in vals:
+            curr.val = v
+            prev = curr
+            curr = curr.next
 
-        temp = ListNode()
-        current = temp
-
-        while head:
-            if head.val >= len(freq) or not freq[head.val]:
-                current.next = head
-                current = current.next
-            head = head.next
-
-        current.next = None
-
-        return temp.next
-
-        
+        if prev:
+            prev.next = None
+        return head
