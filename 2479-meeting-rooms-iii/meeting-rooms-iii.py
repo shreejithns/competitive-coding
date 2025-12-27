@@ -1,31 +1,42 @@
 class Solution:
-    def mostBooked(self, n: int, meetings: List[List[int]]) -> int:
-        ans = [0] * n
-        times = [0] * n
+    def mostBooked(self, n: int, meetings: list[list[int]]) -> int:
         meetings.sort()
 
-        for start, end in meetings:
-            flag = False
-            minind = -1
-            val = float('inf')
-            for j in range(n):
-                if times[j] < val:
-                    val = times[j]
-                    minind = j
-                if times[j] <= start:
-                    flag = True
-                    ans[j] += 1
-                    times[j] = end
+        count = [0] * n
+        timer = [0] * n
+
+        itr = 0
+
+        while itr < len(meetings):
+            start, end = meetings[itr]
+            dur = end - start
+
+            room = -1
+            earliest = 10**18
+            earliestRoom = -1
+
+            for i in range(n):
+                if timer[i] < earliest:
+                    earliest = timer[i]
+                    earliestRoom = i
+                if timer[i] <= start:
+                    room = i
                     break
-            if not flag:
-                ans[minind] += 1
-                times[minind] += (end - start)
 
-        maxi = -1
-        id = -1
+            if room != -1:
+                timer[room] = end
+                count[room] += 1
+            else:
+                timer[earliestRoom] += dur
+                count[earliestRoom] += 1
+
+            itr += 1
+
+        maxv = 0
+        idx = 0
         for i in range(n):
-            if ans[i] > maxi:
-                maxi = ans[i]
-                id = i
-        return id
+            if count[i] > maxv:
+                maxv = count[i]
+                idx = i
 
+        return idx
