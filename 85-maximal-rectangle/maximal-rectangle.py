@@ -1,23 +1,21 @@
 class Solution:
     def maximalRectangle(self, matrix: List[List[str]]) -> int:
-        if not matrix:
-            return 0
-        
-        rows, cols = len(matrix), len(matrix[0])
-        heights = [0] * (cols + 1)  # Include an extra element for easier calculation
-        max_area = 0
-        
+        result = 0
+        cols = len(matrix[0])
+        dp = [0] * cols
+
         for row in matrix:
             for i in range(cols):
-                heights[i] = heights[i] + 1 if row[i] == '1' else 0
-            
-            # Calculate max area using histogram method
+                if row[i] == "1":
+                    dp[i]+=1
+                else:
+                    dp[i] = 0   
             stack = []
-            for i in range(len(heights)):
-                while stack and heights[i] < heights[stack[-1]]:
-                    h = heights[stack.pop()]
-                    w = i if not stack else i - stack[-1] - 1
-                    max_area = max(max_area, h * w)
-                stack.append(i)
-        
-        return max_area               
+            for j in range(cols+1):
+                cur_val = dp[j] if j < cols else 0
+                while stack and dp[stack[-1]] > cur_val:
+                    height = dp[stack.pop()]
+                    weidth = j if not stack else j-stack[-1]-1
+                    result = max(result,height*weidth)
+                stack.append(j)
+        return result
