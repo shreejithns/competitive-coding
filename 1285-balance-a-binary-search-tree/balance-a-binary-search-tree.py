@@ -1,21 +1,21 @@
 class Solution:
-    def balanceBST(self, root: TreeNode) -> TreeNode:
-        self.sortedArr = []
-        self.inorderTraverse(root)
-        return self.sortedArrayToBST(0, len(self.sortedArr) - 1)
-
-    def inorderTraverse(self, root: TreeNode) -> None:
-        if not root:
+    def inorder(self, node, vals):
+        if not node:
             return
-        self.inorderTraverse(root.left)
-        self.sortedArr.append(root)
-        self.inorderTraverse(root.right)
+        self.inorder(node.left, vals)
+        vals.append(node.val)
+        self.inorder(node.right, vals)
 
-    def sortedArrayToBST(self, start: int, end: int) -> TreeNode:
-        if start > end:
+    def build(self, vals, l, r):
+        if l > r:
             return None
-        mid = (start + end) // 2
-        root = self.sortedArr[mid]
-        root.left = self.sortedArrayToBST(start, mid - 1)
-        root.right = self.sortedArrayToBST(mid + 1, end)
-        return root
+        mid  = (l + r) // 2
+        node = TreeNode(vals[mid])
+        node.left  = self.build(vals, l, mid - 1)
+        node.right = self.build(vals, mid + 1, r)
+        return node
+
+    def balanceBST(self, root):
+        vals = []
+        self.inorder(root, vals)
+        return self.build(vals, 0, len(vals) - 1)
