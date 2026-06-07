@@ -1,27 +1,44 @@
 class Solution:
-    def createBinaryTree(self, descriptions: list[list[int]]) -> Optional[TreeNode]:
-        def construct_tree(cur_node_val):
-            new_node = TreeNode(cur_node_val)
-            if cur_node_val in children_hashmap:
-                if children_hashmap[cur_node_val][0] is not None:
-                    new_node.left = construct_tree(children_hashmap[cur_node_val][0])
-                if children_hashmap[cur_node_val][1] is not None:
-                    new_node.right = construct_tree(children_hashmap[cur_node_val][1])
-            return new_node
+    def createBinaryTree(
+        self, descriptions: List[List[int]]
+    ) -> Optional[TreeNode]:
+        # Sets to track unique children and parents
+        children = set()
+        parents = set()
+        # Dictionary to store parent to children relationships
+        parentToChildren = {}
 
-        children_set = set()
-        children_hashmap: dict[int, list[int]] = {}
+        # Build graph from parent to child, and add nodes to sets
+        for d in descriptions:
+            parent, child, isLeft = d
+            parents.add(parent)
+            parents.add(child)
+            children.add(child)
+            if parent not in parentToChildren:
+                parentToChildren[parent] = []
+            parentToChildren[parent].append((child, isLeft))
 
-        for parent, child, isleft in descriptions:
-            if not parent in children_hashmap:
-                children_hashmap[parent] = [None, None]  # left and right
-            children_set.add(child)
-            target = 0 if isleft else 1
-            children_hashmap[parent][target] = child
+        # Find the root node by checking which node is
+        # in parents but not in children
+        for parent in parents.copy():
+            if parent in children:
+                parents.remove(parent)
 
-        for parent in children_hashmap:
-            if parent not in children_set:
-                head_node_val: int = parent
-                break
-        head = construct_tree(head_node_val)
-        return head
+        root = TreeNode(next(iter(parents)))
+
+        # Starting from root, use BFS to construct binary tree
+        queue = deque([root])
+
+        while queue:
+            parent = queue.popleft()
+            # Iterate over children of current parent
+            for childValue, isLeft in parentToChildren.get(parent.val, []):
+                child = TreeNode(childValue)
+                queue.append(child)
+                # Attach child node to its parent based on isLeft flag
+                if isLeft == 1:
+                    parent.left = child
+                else:
+                    parent.right = child
+
+        return root
